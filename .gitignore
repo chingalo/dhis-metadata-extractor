@@ -2,4 +2,5 @@
 *.xls*
 node_modules
 config/server-config.js
+config/metadata.js
 
