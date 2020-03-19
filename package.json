@@ -1,0 +1,39 @@
+{
+    "name": "dhis-metadata-extractor",
+    "version": "1.0.0",
+    "description": "script for extraction of dhis 2 metadata",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/chingalo/dhis-metadata-extractor.git"
+    },
+    "keywords": [
+        "dhis2",
+        "dhis",
+        "metadata"
+    ],
+    "author": "Joseph Chingalo",
+    "license": "GPL-3.0-or-later",
+    "bugs": {
+        "url": "https://github.com/chingalo/dhis-metadata-extractor/issues"
+    },
+    "homepage": "https://github.com/chingalo/dhis-metadata-extractor#readme",
+    "dependencies": {
+        "commitizen": "^4.0.3",
+        "cz-conventional-changelog": "^3.1.0",
+        "excel4node": "^1.7.2",
+        "lodash": "^4.17.15",
+        "moment": "^2.24.0",
+        "promise": "^8.1.0",
+        "request": "^2.88.2",
+        "shelljs": "^0.8.3"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    }
+}
