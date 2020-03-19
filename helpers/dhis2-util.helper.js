@@ -13,6 +13,17 @@ function uid() {
     return uid;
 }
 
+function getSanitizedNameForExcelFiles(name) {
+    name = _.join(
+        _.filter(name.split('/'), key => key.trim() !== ''),
+        '_'
+    );
+    return _.join(
+        _.filter(name.split(' '), key => key.trim() !== ''),
+        '_'
+    );
+}
+
 async function getIndexFromObjectArray(array, key, value) {
     return _.findIndex(array, data => data[key] === value);
 }
@@ -192,6 +203,7 @@ function getSanitizedValueAndKey(key, value, dataArrayKey) {
 module.exports = {
     uid,
     getIndexFromObjectArray,
+    getSanitizedNameForExcelFiles,
     getHttpAuthorizationHeader,
     getNextDay,
     getFormattedDate,
