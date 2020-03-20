@@ -12,7 +12,7 @@ const excelFileDir = `${fileManipulationHelper.fileDir}/${outputDir}/excel-files
 async function getProgramMetadataFromServer(headers, serverUrl) {
     const programsMetadata = [];
     try {
-        for (const program of _.chunk(programs, 1)[1]) {
+        for (const program of programs) {
             await logsHelper.addLogs(
                 'INFO',
                 `Discovering program metadata for ${program}`,
@@ -29,7 +29,7 @@ async function getProgramMetadataFromServer(headers, serverUrl) {
 }
 
 async function getProgramMetadata(headers, serverUrl, program) {
-    const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,valueType,id,optionSet[name,id]]],programStages[id,name,programStageSections[name,dataElements[name,id,valueType,optionSet[name,id]]]]`;
+    const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,valueType,id,optionSet[name,id]]],programStages[id,name,programStageSections[id,name,dataElements[name,id,valueType,optionSet[name,id]]]]`;
     return await http.getHttp(headers, url);
 }
 
@@ -39,6 +39,11 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
         for (const program of programsMetadata) {
             try {
                 const workbook = new excel4node.Workbook();
+                const headerStyles = workbook.createStyle({
+                    font: {
+                        bold: true
+                    }
+                });
                 const {
                     id,
                     name,
@@ -53,24 +58,123 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                     `Create excel file for ${name}`,
                     'Program helper'
                 );
-                // infor
                 const sheetName = dhis2Utils.getSanitizedNameForExcelFiles('Info');
                 const worksheet = workbook.addWorksheet(`${sheetName}`);
-
-                // attributes
+                worksheet.cell(1, 1).string('id');
+                worksheet.cell(1, 2).string('name');
+                worksheet.cell(1, 3).string('programType');
+                worksheet.cell(1, 4).string('trackedEntityType_id');
+                worksheet.cell(1, 5).string('trackedEntityType_name');
+                worksheet.cell(2, 1).string(id);
+                worksheet.cell(2, 2).string(name);
+                worksheet.cell(2, 2).string(programType);
+                worksheet.cell(2, 3).string(trackedEntityType.id || '');
+                worksheet.cell(2, 4).string(trackedEntityType.name || '');
                 const sheetNameAttribute = dhis2Utils.getSanitizedNameForExcelFiles(
                     'Attributes'
                 );
                 const worksheetAttribute = workbook.addWorksheet(
                     `${sheetNameAttribute}`
                 );
-
-                // program stages
+                let attributeRowIndex = 1;
+                const attributesHeaders = getColumnHeaders(
+                    _.flattenDeep(
+                        _.map(
+                            programTrackedEntityAttributes,
+                            programTrackedEntityAttribute =>
+                            programTrackedEntityAttribute.trackedEntityAttribute || []
+                        )
+                    )
+                );
+                let attributeColumnIndex = 1;
+                for (const header of attributesHeaders) {
+                    worksheetAttribute
+                        .cell(attributeRowIndex, attributeColumnIndex)
+                        .string(header);
+                    attributeColumnIndex++;
+                }
+                attributeRowIndex++;
+                for (const programTrackedEntityAttribute of programTrackedEntityAttributes) {
+                    const { trackedEntityAttribute } = programTrackedEntityAttribute;
+                    let attributeColumnIndex = 1;
+                    for (const key of _.keys(trackedEntityAttribute)) {
+                        if (typeof trackedEntityAttribute[key] === 'object') {
+                            for (const newKey of _.keys(trackedEntityAttribute[key])) {
+                                const dataObj = trackedEntityAttribute[key];
+                                worksheetAttribute
+                                    .cell(attributeRowIndex, attributeColumnIndex)
+                                    .string(dataObj[newKey] || '');
+                                attributeColumnIndex++;
+                            }
+                        } else {
+                            worksheetAttribute
+                                .cell(attributeRowIndex, attributeColumnIndex)
+                                .string(trackedEntityAttribute[key]);
+                        }
+                        attributeColumnIndex++;
+                    }
+                    attributeRowIndex++;
+                }
                 for (const programStage of programStages) {
                     const { name, id, programStageSections } = programStage;
                     const sheetName = dhis2Utils.getSanitizedNameForExcelFiles(name);
                     const worksheet = workbook.addWorksheet(`${sheetName}`);
-                    worksheet.cell(1, 1).string(name);
+                    let programstageRowIndex = 1;
+                    worksheet.cell(programstageRowIndex, 1).string('id');
+                    worksheet.cell(programstageRowIndex, 2).string('name');
+                    programstageRowIndex++;
+                    worksheet.cell(programstageRowIndex, 1).string(id);
+                    worksheet.cell(programstageRowIndex, 2).string(name);
+                    for (const programStageSection of programStageSections) {
+                        programstageRowIndex += 2;
+                        const { id, name, dataElements } = programStageSection;
+                        worksheet
+                            .cell(programstageRowIndex, 1)
+                            .string(`Section info for : ${name}`)
+                            .style(headerStyles);
+                        programstageRowIndex++;
+
+                        worksheet.cell(programstageRowIndex, 1).string('id');
+                        worksheet.cell(programstageRowIndex, 2).string('name');
+                        programstageRowIndex++;
+                        worksheet.cell(programstageRowIndex, 1).string(id || '');
+                        worksheet.cell(programstageRowIndex, 2).string(name || '');
+                        programstageRowIndex += 2;
+                        worksheet
+                            .cell(programstageRowIndex, 1)
+                            .string(`Data element info for section : ${name}`)
+                            .style(headerStyles);
+                        programstageRowIndex++;
+                        let programStageColumnIndex = 1;
+                        const programStageHeaders = getColumnHeaders(dataElements);
+                        for (const header of programStageHeaders) {
+                            worksheet
+                                .cell(programstageRowIndex, programStageColumnIndex)
+                                .string(header);
+                            programStageColumnIndex++;
+                        }
+                        programstageRowIndex++;
+                        for (const dataElement of dataElements) {
+                            let programStageColumnIndex = 1;
+                            for (const key of _.keys(dataElement)) {
+                                if (typeof dataElement[key] === 'object') {
+                                    for (const newKey of _.keys(dataElement[key])) {
+                                        const dataObj = dataElement[key];
+                                        worksheet
+                                            .cell(programstageRowIndex, programStageColumnIndex)
+                                            .string(dataObj[newKey] || '');
+                                        programStageColumnIndex++;
+                                    }
+                                } else {
+                                    worksheet
+                                        .cell(programstageRowIndex, programStageColumnIndex)
+                                        .string(dataElement[key] || '');
+                                }
+                                programStageColumnIndex++;
+                            }
+                            programstageRowIndex++;
+                        }
+                    }
                 }
                 workbook.write(`${excelFileDir}/${fileName}.xlsx`);
             } catch (error) {
@@ -80,6 +184,22 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
     } catch (error) {
         await logsHelper.addLogs('ERROR', JSON.stringify(error), 'Program helper');
     }
+}
+
+function getColumnHeaders(data) {
+    return _.uniq(
+        _.flattenDeep(
+            _.map(data, dataObject => {
+                return _.map(_.keys(dataObject), key => {
+                    return typeof dataObject[key] === 'object' ?
+                        _.map(_.keys(dataObject[key]), newKey => {
+                            return `${key}_${newKey}`;
+                        }) :
+                        key;
+                });
+            })
+        )
+    );
 }
 
 module.exports = {
