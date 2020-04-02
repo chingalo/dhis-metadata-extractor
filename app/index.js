@@ -1,26 +1,15 @@
-const { sourceConfig, programs } = require('../config');
-const dhis2Utils = require('../helpers/dhis2-util.helper');
-const logsHelper = require('../helpers/logs.helper');
-const programHelper = require('../helpers/program.helper');
-
-const serverUrl = sourceConfig.url;
+const dataExtractor = require('./data-extractor');
+const dataExcelGenerator = require('./data-excel-generator');
 
 async function startApp() {
-    const headers = await dhis2Utils.getHttpAuthorizationHeader(
-        sourceConfig.username,
-        sourceConfig.password
+    const {
+        programsMetadata,
+        optionSetsMetadata
+    } = await dataExtractor.startMetadataExtraction();
+    await dataExcelGenerator.startExcelGenerator(
+        programsMetadata,
+        optionSetsMetadata
     );
-    await logsHelper.addLogs('INFO', `Discovering program metadata`, 'App');
-    const programsMetadata = await programHelper.getProgramMetadataFromServer(
-        headers,
-        serverUrl
-    );
-    await logsHelper.addLogs(
-        'INFO',
-        `Creating program metadata's excel files for ${programsMetadata.length} programs`,
-        'App'
-    );
-    await programHelper.createProgramMetadataExcelFiles(programsMetadata);
 }
 
 module.exports = { startApp };
