@@ -71,17 +71,18 @@ async function createProgramMetadataExcelFiles(optionSets) {
         let rowIndex = 2;
         for (const optionSet of optionSets) {
             const { name, valueType, options } = optionSet;
-            worksheet.cell(rowIndex, 2).string(`${name}`);
-            worksheet.cell(rowIndex, 3).string(`${valueType}`);
+            worksheet.cell(rowIndex, 1).string(`${name}`);
+            worksheet.cell(rowIndex, 2).string(`${valueType}`);
             for (const option of options) {
-                worksheet.cell(rowIndex, 4).string(`${option.id || ''}`);
-                worksheet.cell(rowIndex, 5).string(`${option.name || ''}`);
-                worksheet.cell(rowIndex, 6).string(`${option.code || ''}`);
+                worksheet.cell(rowIndex, 3).string(`${option.id || ''}`);
+                worksheet.cell(rowIndex, 4).string(`${option.name || ''}`);
+                worksheet.cell(rowIndex, 5).string(`${option.code || ''}`);
                 rowIndex++;
             }
             if (options && options.length === 0) rowIndex++;
         }
-
+        worksheet.row(1).freeze();
+        worksheet.column(2).freeze();
         workbook.write(`${excelFileDir}/${fileName}.xlsx`);
     } catch (error) {
         await logsHelper.addLogs(
