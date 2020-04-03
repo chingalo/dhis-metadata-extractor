@@ -24,7 +24,19 @@ async function getProgramMetadataFromServer(headers, serverUrl) {
     } catch (error) {
         await logsHelper.addLogs('ERROR', JSON.stringify(error), 'Program helper');
     } finally {
-        return _.flattenDeep(programsMetadata);
+        return _.map(_.flattenDeep(programsMetadata), program => {
+            const { programStages } = program;
+            return {
+                ...program,
+                programStages: _.filter(
+                    programStages,
+                    programStage =>
+                    programStage &&
+                    programStage.name &&
+                    `${programStage.name}`.trim() !== '.'
+                )
+            };
+        });
     }
 }
 
