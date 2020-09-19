@@ -91,7 +91,6 @@ async function createProgramMetadataExcelFiles(optionSets) {
             if (options && options.length === 0) rowIndex++;
         }
         worksheet.row(1).freeze();
-        worksheet.column(2).freeze();
         workbook.write(`${excelFileDir}/${fileName}.xlsx`);
     } catch (error) {
         await logsHelper.addLogs(

@@ -42,8 +42,7 @@ async function getProgramMetadataFromServer(headers, serverUrl) {
 
 async function getProgramMetadata(headers, serverUrl, program) {
     const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
-    console.log(url);
-    return await http.getHttp(headers, url);
+   return await http.getHttp(headers, url);
 }
 
 async function createProgramMetadataExcelFiles(programsMetadata) {
