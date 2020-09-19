@@ -16,7 +16,7 @@ async function getOptionSetMetadataFromServer(headers, serverUrl) {
             `Discovering option set metadata`,
             'Option set helper'
         );
-        const url = `${serverUrl}/api/optionSets.json?fields=id,name,valueType,options[id,name,code]&paging=falses`;
+        const url = `${serverUrl}/api/optionSets.json?fields=id,name,code,valueType,options[id,name,code]&paging=falses`;
         const response = await http.getHttp(headers, url);
         const optionSets = response.optionSets || [];
         optionSetMetadata.push(optionSets);
@@ -50,33 +50,42 @@ async function createProgramMetadataExcelFiles(optionSets) {
         const worksheet = workbook.addWorksheet(`${sheetName}`);
         worksheet
             .cell(1, 1)
-            .string('name')
+            .string('id')
             .style(headerStyles);
         worksheet
             .cell(1, 2)
+            .string('name')
+            .style(headerStyles);worksheet
+            .cell(1, 3)
+            .string('code')
+            .style(headerStyles);  
+        worksheet
+            .cell(1, 4)
             .string('valueType')
             .style(headerStyles);
         worksheet
-            .cell(1, 3)
+            .cell(1, 5)
             .string('option id')
             .style(headerStyles);
         worksheet
-            .cell(1, 4)
+            .cell(1, 6)
             .string('option name')
             .style(headerStyles);
         worksheet
-            .cell(1, 5)
+            .cell(1, 7)
             .string('option code')
             .style(headerStyles);
         let rowIndex = 2;
         for (const optionSet of optionSets) {
-            const { name, valueType, options } = optionSet;
-            worksheet.cell(rowIndex, 1).string(`${name}`);
-            worksheet.cell(rowIndex, 2).string(`${valueType}`);
+            const { name, valueType, options,id,code } = optionSet;
+            worksheet.cell(rowIndex, 1).string(`${id}`);
+            worksheet.cell(rowIndex, 2).string(`${name}`);
+            worksheet.cell(rowIndex, 3).string(`${code}`);
+            worksheet.cell(rowIndex, 4).string(`${valueType}`);
             for (const option of options) {
-                worksheet.cell(rowIndex, 3).string(`${option.id || ''}`);
-                worksheet.cell(rowIndex, 4).string(`${option.name || ''}`);
-                worksheet.cell(rowIndex, 5).string(`${option.code || ''}`);
+                worksheet.cell(rowIndex, 5).string(`${option.id || ''}`);
+                worksheet.cell(rowIndex, 6).string(`${option.name || ''}`);
+                worksheet.cell(rowIndex, 7).string(`${option.code || ''}`);
                 rowIndex++;
             }
             if (options && options.length === 0) rowIndex++;
