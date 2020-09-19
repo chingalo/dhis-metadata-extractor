@@ -41,7 +41,8 @@ async function getProgramMetadataFromServer(headers, serverUrl) {
 }
 
 async function getProgramMetadata(headers, serverUrl, program) {
-    const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,valueType,id,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[name,id,valueType,optionSet[name,id]]],programStageSections[id,name,dataElements[name,id,valueType,optionSet[name,id]]]]`;
+    const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
+    console.log(url);
     return await http.getHttp(headers, url);
 }
 
@@ -102,7 +103,7 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                 for (const header of attributesHeaders) {
                     worksheetAttribute
                         .cell(attributeRowIndex, attributeColumnIndex)
-                        .string(header);
+                        .string(`${header}`);
                     attributeColumnIndex++;
                 }
                 attributeRowIndex++;
@@ -115,13 +116,13 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                                 const dataObj = trackedEntityAttribute[key];
                                 worksheetAttribute
                                     .cell(attributeRowIndex, attributeColumnIndex)
-                                    .string(dataObj[newKey] || '');
+                                    .string(`${dataObj[newKey] || ''}`);
                                 attributeColumnIndex++;
                             }
                         } else {
                             worksheetAttribute
                                 .cell(attributeRowIndex, attributeColumnIndex)
-                                .string(trackedEntityAttribute[key]);
+                                .string(`${trackedEntityAttribute[key] || ''}`);
                         }
                         attributeColumnIndex++;
                     }
@@ -166,7 +167,7 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                         for (const header of programStageHeaders) {
                             worksheet
                                 .cell(programstageRowIndex, programStageColumnIndex)
-                                .string(header);
+                                .string(`${header}`);
                             programStageColumnIndex++;
                         }
                         programstageRowIndex++;
@@ -178,13 +179,13 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                                         const dataObj = dataElement[key];
                                         worksheet
                                             .cell(programstageRowIndex, programStageColumnIndex)
-                                            .string(dataObj[newKey] || '');
+                                            .string(`${dataObj[newKey] || ''}`);
                                         programStageColumnIndex++;
                                     }
                                 } else {
                                     worksheet
                                         .cell(programstageRowIndex, programStageColumnIndex)
-                                        .string(dataElement[key] || '');
+                                        .string(`${dataElement[key] || ''}`);
                                 }
                                 programStageColumnIndex++;
                             }
@@ -216,7 +217,7 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                             for (const header of programStageHeaders) {
                                 worksheet
                                     .cell(programstageRowIndex, programStageColumnIndex)
-                                    .string(header);
+                                    .string(`${header}`);
                                 programStageColumnIndex++;
                             }
                             programstageRowIndex++;
@@ -228,13 +229,13 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                                             const dataObj = dataElement[key];
                                             worksheet
                                                 .cell(programstageRowIndex, programStageColumnIndex)
-                                                .string(dataObj[newKey] || '');
+                                                .string(`${dataObj[newKey] || ''}`);
                                             programStageColumnIndex++;
                                         }
                                     } else {
                                         worksheet
                                             .cell(programstageRowIndex, programStageColumnIndex)
-                                            .string(dataElement[key] || '');
+                                            .string(`${dataElement[key] || ''}`);
                                     }
                                     programStageColumnIndex++;
                                 }
