@@ -3,4 +3,5 @@
 node_modules
 config/server-config.js
 config/metadata.js
+*.DS_Store
 
