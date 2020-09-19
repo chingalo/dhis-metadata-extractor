@@ -79,9 +79,9 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
                 worksheet.cell(1, 5).string('trackedEntityType_name');
                 worksheet.cell(2, 1).string(id);
                 worksheet.cell(2, 2).string(name);
-                worksheet.cell(2, 2).string(programType);
-                worksheet.cell(2, 3).string(trackedEntityType.id || '');
-                worksheet.cell(2, 4).string(trackedEntityType.name || '');
+                worksheet.cell(2, 3).string(programType);
+                worksheet.cell(2, 4).string(trackedEntityType.id || '');
+                worksheet.cell(2, 5).string(trackedEntityType.name || '');
                 const sheetNameAttribute = dhis2Utils.getSanitizedNameForExcelFiles(
                     'Attributes'
                 );
