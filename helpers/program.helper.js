@@ -95,50 +95,52 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
               : ''
           );
 
-        const sheetNameAttribute = dhis2Utils.getSanitizedNameForExcelFiles(
-          'Attributes'
-        );
-        const worksheetAttribute = workbook.addWorksheet(
-          `${sheetNameAttribute}`
-        );
-        let attributeRowIndex = 1;
-        const attributesHeaders = getColumnHeaders(
-          _.flattenDeep(
-            _.map(
-              programTrackedEntityAttributes,
-              (programTrackedEntityAttribute) =>
-                programTrackedEntityAttribute.trackedEntityAttribute || []
+        if (programTrackedEntityAttributes.length > 0) {
+          let attributeRowIndex = 1;
+          const attributesHeaders = getColumnHeaders(
+            _.flattenDeep(
+              _.map(
+                programTrackedEntityAttributes,
+                (programTrackedEntityAttribute) =>
+                  programTrackedEntityAttribute.trackedEntityAttribute || []
+              )
             )
-          )
-        );
-        let attributeColumnIndex = 1;
-        for (const header of attributesHeaders) {
-          worksheetAttribute
-            .cell(attributeRowIndex, attributeColumnIndex)
-            .string(`${header}`);
-          attributeColumnIndex++;
-        }
-        attributeRowIndex++;
-        for (const programTrackedEntityAttribute of programTrackedEntityAttributes) {
-          const { trackedEntityAttribute } = programTrackedEntityAttribute;
+          );
+          const sheetNameAttribute = dhis2Utils.getSanitizedNameForExcelFiles(
+            'Attributes'
+          );
+          const worksheetAttribute = workbook.addWorksheet(
+            `${sheetNameAttribute}`
+          );
           let attributeColumnIndex = 1;
-          for (const key of _.keys(trackedEntityAttribute)) {
-            if (typeof trackedEntityAttribute[key] === 'object') {
-              for (const newKey of _.keys(trackedEntityAttribute[key])) {
-                const dataObj = trackedEntityAttribute[key];
-                worksheetAttribute
-                  .cell(attributeRowIndex, attributeColumnIndex)
-                  .string(`${dataObj[newKey] || ''}`);
-                attributeColumnIndex++;
-              }
-            } else {
-              worksheetAttribute
-                .cell(attributeRowIndex, attributeColumnIndex)
-                .string(`${trackedEntityAttribute[key] || ''}`);
-            }
+          for (const header of attributesHeaders) {
+            worksheetAttribute
+              .cell(attributeRowIndex, attributeColumnIndex)
+              .string(`${header}`);
             attributeColumnIndex++;
           }
           attributeRowIndex++;
+          for (const programTrackedEntityAttribute of programTrackedEntityAttributes) {
+            const { trackedEntityAttribute } = programTrackedEntityAttribute;
+            let attributeColumnIndex = 1;
+            for (const key of _.keys(trackedEntityAttribute)) {
+              if (typeof trackedEntityAttribute[key] === 'object') {
+                for (const newKey of _.keys(trackedEntityAttribute[key])) {
+                  const dataObj = trackedEntityAttribute[key];
+                  worksheetAttribute
+                    .cell(attributeRowIndex, attributeColumnIndex)
+                    .string(`${dataObj[newKey] || ''}`);
+                  attributeColumnIndex++;
+                }
+              } else {
+                worksheetAttribute
+                  .cell(attributeRowIndex, attributeColumnIndex)
+                  .string(`${trackedEntityAttribute[key] || ''}`);
+              }
+              attributeColumnIndex++;
+            }
+            attributeRowIndex++;
+          }
         }
         for (const programStage of programStages) {
           const {
