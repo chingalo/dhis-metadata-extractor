@@ -41,7 +41,7 @@ async function getProgramMetadataFromServer(headers, serverUrl) {
 }
 
 async function getProgramMetadata(headers, serverUrl, program) {
-  const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
+  const url = `${serverUrl}/api/programs/${program}.json?fields=id,programType,name,trackedEntityType[name,id],programSections[name,id,sortOrder,trackedEntityAttributes[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id,code]]],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
   return await http.getHttp(headers, url);
 }
 
@@ -62,6 +62,7 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
           programType,
           trackedEntityType,
           programStages,
+          programSections,
           programTrackedEntityAttributes,
         } = program;
         const fileName = dhis2Utils.getSanitizedNameForExcelFiles(name);
@@ -95,7 +96,61 @@ async function createProgramMetadataExcelFiles(programsMetadata) {
               : ''
           );
 
-        if (programTrackedEntityAttributes.length > 0) {
+        if (programSections.length > 0) {
+          let attributeRowIndex = 1;
+          const attributesHeaders = getColumnHeaders(
+            _.flattenDeep(
+              _.map(
+                programSections,
+                (programSection) => programSection.trackedEntityAttributes || []
+              )
+            )
+          );
+          const sheetNameAttribute = dhis2Utils.getSanitizedNameForExcelFiles(
+            'Attributes'
+          );
+          const worksheetAttribute = workbook.addWorksheet(
+            `${sheetNameAttribute}`
+          );
+
+          let attributeColumnIndex = 1;
+          for (const programSection of programSections) {
+            attributeRowIndex++;
+            attributeColumnIndex = 1;
+            worksheetAttribute
+              .cell(attributeRowIndex, attributeColumnIndex)
+              .string(`${programSection.name}`);
+            attributeRowIndex++;
+            attributeColumnIndex = 1;
+            for (const header of attributesHeaders) {
+              worksheetAttribute
+                .cell(attributeRowIndex, attributeColumnIndex)
+                .string(`${header}`);
+              attributeColumnIndex++;
+            }
+            attributeRowIndex++;
+            for (const trackedEntityAttribute of programSection.trackedEntityAttributes) {
+              attributeColumnIndex = 1;
+              for (const key of _.keys(trackedEntityAttribute)) {
+                if (typeof trackedEntityAttribute[key] === 'object') {
+                  for (const newKey of _.keys(trackedEntityAttribute[key])) {
+                    const dataObj = trackedEntityAttribute[key];
+                    worksheetAttribute
+                      .cell(attributeRowIndex, attributeColumnIndex)
+                      .string(`${dataObj[newKey] || ''}`);
+                    attributeColumnIndex++;
+                  }
+                } else {
+                  worksheetAttribute
+                    .cell(attributeRowIndex, attributeColumnIndex)
+                    .string(`${trackedEntityAttribute[key] || ''}`);
+                }
+                attributeColumnIndex++;
+              }
+              attributeRowIndex++;
+            }
+          }
+        } else if (programTrackedEntityAttributes.length > 0) {
           let attributeRowIndex = 1;
           const attributesHeaders = getColumnHeaders(
             _.flattenDeep(
