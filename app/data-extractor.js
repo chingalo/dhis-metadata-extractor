@@ -7,28 +7,28 @@ const optionSetHelper = require('../helpers/option-set.helper');
 const serverUrl = sourceConfig.url;
 
 async function startMetadataExtraction() {
-    const headers = await dhis2Utils.getHttpAuthorizationHeader(
-        sourceConfig.username,
-        sourceConfig.password
-    );
+  const headers = await dhis2Utils.getHttpAuthorizationHeader(
+    sourceConfig.username,
+    sourceConfig.password
+  );
 
-    await logsHelper.addLogs('INFO', `Discovering program metadata`, 'App');
-    const programsMetadata = await programHelper.getProgramMetadataFromServer(
-        headers,
-        serverUrl
-    );
-    await logsHelper.addLogs('INFO', `Discovering option set metadata`, 'App');
-    const optionSetsMetadata = await optionSetHelper.getOptionSetMetadataFromServer(
-        headers,
-        serverUrl
-    );
+  await logsHelper.addLogs('INFO', `Discovering program metadata`, 'App');
+  const programsMetadata = await programHelper.getProgramMetadataFromServer(
+    headers,
+    serverUrl
+  );
+  await logsHelper.addLogs('INFO', `Discovering option set metadata`, 'App');
+  const optionSetsMetadata = await optionSetHelper.getOptionSetMetadataFromServer(
+    headers,
+    serverUrl
+  );
 
-    return {
-        programsMetadata: programsMetadata || [],
-        optionSetsMetadata: optionSetsMetadata || []
-    };
+  return {
+    programsMetadata: programsMetadata || [],
+    optionSetsMetadata: optionSetsMetadata || [],
+  };
 }
 
 module.exports = {
-    startMetadataExtraction
+  startMetadataExtraction,
 };

@@ -1,5 +1,5 @@
 const programs = [];
 
 module.exports = {
-    programs
+  programs,
 };
