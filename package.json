@@ -1,41 +1,38 @@
 {
-    "name": "dhis-metadata-extractor",
-    "version": "1.0.0",
-    "description": "script for extraction of dhis 2 metadata",
-    "main": "index.js",
-    "scripts": {
-        "format": "prettier --write \"*.js\"  \"*/*.js\"",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/chingalo/dhis-metadata-extractor.git"
-    },
-    "keywords": [
-        "dhis2",
-        "dhis",
-        "metadata"
-    ],
-    "author": "Joseph Chingalo",
-    "license": "GPL-3.0-or-later",
-    "bugs": {
-        "url": "https://github.com/chingalo/dhis-metadata-extractor/issues"
-    },
-    "homepage": "https://github.com/chingalo/dhis-metadata-extractor#readme",
-    "dependencies": {
-        "commitizen": "^4.0.3",
-        "cz-conventional-changelog": "^3.1.0",
-        "excel4node": "^1.7.2",
-        "lodash": "^4.17.15",
-        "moment": "^2.24.0",
-        "prettier": "^2.1.2",
-        "promise": "^8.1.0",
-        "request": "^2.88.2",
-        "shelljs": "^0.8.3"
-    },
-    "config": {
-        "commitizen": {
-            "path": "./node_modules/cz-conventional-changelog"
-        }
-    }
+  "name": "lodiis-custom-report-script",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "build-app": "tsc",
+    "format": "prettier --config .prettierrc --write   \"*/*.ts\" \"*/*/*.ts\"  \"*.json\"",
+    "start": "ts-node ./src/index.ts",
+    "dev": "ts-node-dev --respawn ./src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hisptz/lodiis-custom-report-script.git"
+  },
+  "author": "Joseph Chingalo",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/hisptz/lodiis-custom-report-script/issues"
+  },
+  "homepage": "https://github.com/hisptz/lodiis-custom-report-script#readme",
+  "devDependencies": {
+    "@types/lodash": "^4.14.198",
+    "@types/request": "^2.48.8",
+    "@types/shelljs": "^0.8.12",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "prettier": "^3.0.3",
+    "request": "^2.88.2",
+    "shelljs": "^0.8.5",
+    "xlsx": "^0.18.5"
+  }
 }

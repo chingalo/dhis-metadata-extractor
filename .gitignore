@@ -1,7 +1,5 @@
-*.txt
-*.xls*
+.DS_Store
+dist
+resources
 node_modules
-config/server-config.js
-config/metadata.js
-*.DS_Store
-
+src/configs/app-config.ts
