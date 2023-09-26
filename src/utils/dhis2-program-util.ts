@@ -21,6 +21,10 @@ export class Dhis2ProgramUtil {
   async discoverProgramsMetadata(): Promise<Dhis2Program[]> {
     const programsMetadata: Dhis2Program[] = [];
     try {
+      await new LogsUtil().addLogs(
+        'info',
+        `Discovering programs metadata from the server`
+      );
       for (const programId of PROGRAM_REFERENCE) {
         const programMetadata: any = await this.discoverProgramById(programId);
         programsMetadata.push(programMetadata);

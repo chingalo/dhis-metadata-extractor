@@ -20,6 +20,10 @@ export class Dhis2OptionSetUtil {
   async discoverDhis2OptionSetsMetadata() {
     let optionSetsMetadata: Dhis2OptionSet[] = [];
     try {
+      await new LogsUtil().addLogs(
+        'info',
+        `Discovering option set from the server`
+      );
       const fields = `id,name,code,valueType,options[id,name,code]`;
       const url = `${this._baseUrl}/api/optionSets.json?fields=${fields}&paging=false`;
       const respose: any = await HttpUtil.getHttp(this._headers, url);
