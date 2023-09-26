@@ -1,1 +1,1 @@
-# LODIIS Custom Report Script
+# dhis2-metadata-extractor
