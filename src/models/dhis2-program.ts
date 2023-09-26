@@ -20,7 +20,7 @@ export interface Dhis2TrackedEntityType {
 export interface Dhis2ProgramSection {
   id: string;
   name: string;
-  sortOrder: string;
+  sortOrder: number;
   trackedEntityAttributes: Dhis2TrackedEntityAttribute[];
 }
 
@@ -37,7 +37,7 @@ export interface Dhis2TrackedEntityAttribute {
   description?: string;
   valueType: string;
   aggregationType: string;
-  displayInListNoProgram: string;
+  displayInListNoProgram: boolean;
   pattern: string;
   optionSet?: Dhis2OptionSet;
 }
@@ -67,6 +67,6 @@ export interface Dhis2DataElement {
   valueType: string;
   aggregationType: string;
   domainType: string;
-  zeroIsSignificant: string;
+  zeroIsSignificant: boolean;
   optionSet?: Dhis2OptionSet;
 }
