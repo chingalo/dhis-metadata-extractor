@@ -1,5 +1,5 @@
 {
-  "name": "lodiis-custom-report-script",
+  "name": "dhis2-metadata-extractor",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
@@ -17,9 +17,9 @@
   "author": "Joseph Chingalo",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/hisptz/lodiis-custom-report-script/issues"
+    "url": "https://github.com/chingalo/dhis2-metadata-extractor/issues"
   },
-  "homepage": "https://github.com/hisptz/lodiis-custom-report-script#readme",
+  "homepage": "https://github.com/chingalo/dhis2-metadata-extractor#readme",
   "devDependencies": {
     "@types/lodash": "^4.14.198",
     "@types/request": "^2.48.8",
