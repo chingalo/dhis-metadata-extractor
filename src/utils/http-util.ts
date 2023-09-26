@@ -1,7 +1,7 @@
 import request from 'request';
 
 export class HttpUtil {
-  static async getHttp(headers: any, url: string) {
+  static async getHttp(headers: any, url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       request(
         {
@@ -27,7 +27,7 @@ export class HttpUtil {
     });
   }
 
-  static async postHttp(headers: any, url: string, data: any) {
+  static async postHttp(headers: any, url: string, data: any): Promise<any> {
     return new Promise((resolve, reject) => {
       request(
         {
@@ -54,7 +54,7 @@ export class HttpUtil {
     });
   }
 
-  static async deleteHttp(headers: any, url: string) {
+  static async deleteHttp(headers: any, url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       request(
         {
@@ -80,7 +80,7 @@ export class HttpUtil {
     });
   }
 
-  static async putHttp(headers: any, url: string, data: any) {
+  static async putHttp(headers: any, url: string, data: any): Promise<any> {
     return new Promise((resolve, reject) => {
       request(
         {
