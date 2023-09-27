@@ -54,7 +54,8 @@ export class Dhis2ProgramUtil {
         if (
           programStage &&
           programStage.name &&
-          `${programStage.name}`.trim() !== '.'
+          (`${programStage.name}`.trim() !== '.' ||
+            programStage.publicAccess !== '--------')
         ) {
           programStages.push(programStage);
         }
@@ -72,7 +73,7 @@ export class Dhis2ProgramUtil {
       `Discovering program metadata with id : ${programId}`,
       'Dhis2ProgramUtil'
     );
-    const fields = `id,programType,name,trackedEntityType[name,id],programSections[name,id,sortOrder,trackedEntityAttributes[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id,code]]],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
+    const fields = `id,programType,name,trackedEntityType[name,id],programSections[name,id,sortOrder,trackedEntityAttributes[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id,code]]],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,publicAccess,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
     const url = `${this._baseUrl}/api/programs/${programId}.json?fields=${fields}`;
     return HttpUtil.getHttp(this._headers, url);
   }
