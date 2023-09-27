@@ -45,6 +45,7 @@ export interface Dhis2TrackedEntityAttribute {
 export interface Dhis2ProgramStage {
   id: string;
   name: string;
+  publicAccess: string;
   programStageDataElements: Array<{
     dataElement: Dhis2DataElement;
   }>;

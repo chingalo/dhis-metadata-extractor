@@ -1,3 +1,4 @@
+import { keys } from 'lodash';
 import { Dhis2OptionSet, Dhis2Program } from '../models';
 import { Dhis2OptionSetUtil, Dhis2ProgramUtil, LogsUtil } from '../utils';
 
@@ -15,11 +16,10 @@ export class AppProcess {
       await new LogsUtil().addLogs('info', `Starting up the process`, 'app');
       const optionSetsMetadata: Dhis2OptionSet[] =
         await this._dhis2OptionSetUtil.discoverDhis2OptionSetsMetadata();
+      await this._dhis2OptionSetUtil.generateExcelFile(optionSetsMetadata);
       const programsMetadata: Dhis2Program[] =
         await this._dhis2ProgramUtil.discoverProgramsMetadata();
-      console.log({
-        red: { optionSetsMetadata, programsMetadata }
-      });
+      await this._dhis2ProgramUtil.generateExcelFile(programsMetadata);
     } catch (error: any) {
       await new LogsUtil().addLogs('error', error.message || error, 'app');
     }

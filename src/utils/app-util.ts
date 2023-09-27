@@ -1,6 +1,19 @@
 import _ from 'lodash';
 
 export class AppUtil {
+  static getFormattedExcelName(name: string): string {
+    return _.join(
+      _.filter(
+        _.join(
+          _.filter(name.split('/'), (key) => key.trim() !== ''),
+          '_'
+        ).split(' '),
+        (key) => key.trim() !== ''
+      ),
+      '_'
+    );
+  }
+
   static getPaginationsFilters(
     response: { pager: any },
     pageSize: number = 25
