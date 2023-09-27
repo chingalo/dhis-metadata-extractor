@@ -86,10 +86,6 @@ export class Dhis2ProgramUtil {
           `Generate excel file for dictionary for program : ${program.name}`,
           'Dhis2ProgramUtil'
         );
-        //get profile info json
-        // get stages jsons
-        // generate excel file
-        // todo set up metadata now
         let jsonObject: any = {
           'Summary Information': this._getProgramInfoSummary(program)
         };
@@ -102,6 +98,10 @@ export class Dhis2ProgramUtil {
             'Profile Information': this._getProgramProfileInformation(program)
           };
         }
+        jsonObject = {
+          ...jsonObject,
+          ...this._getProgramStageInformation(program)
+        };
 
         await new ExcelUtil(
           AppUtil.getFormattedExcelName(program.name)
@@ -116,6 +116,60 @@ export class Dhis2ProgramUtil {
     }
   }
 
+  _getProgramStageInformation(program: Dhis2Program) {
+    const jsonObject: any = {};
+    for (const programStage of program.programStages) {
+      const sheetName = AppUtil.getFormattedExcelName(
+        programStage.name
+      ).substring(0, 30);
+      let json: any = [
+        {
+          item1: 'ID',
+          item2: 'Name'
+        },
+        { item1: programStage.id, item2: programStage.name },
+        { item1: '' }
+      ];
+      if (
+        programStage.programStageSections &&
+        programStage.programStageSections.length > 0
+      ) {
+        for (const programStageSection of programStage.programStageSections) {
+          json = [
+            ...json,
+            { item1: 'Section Information' },
+            { item1: 'ID', item2: 'Name' },
+            { item1: programStageSection.id, item2: programStageSection.name },
+            { item1: 'List of Data Elements' },
+            ...this._getProgramTrackedEntityAttributeDataElementjson(
+              programStageSection.dataElements
+            ),
+            { item1: '' }
+          ];
+        }
+      } else {
+        const dataElements = flattenDeep(
+          map(
+            programStage.programStageDataElements,
+            (programStageDataElement) => programStageDataElement.dataElement
+          )
+        );
+        json = [
+          ...json,
+          { item1: 'List of Data Elements' },
+          ...this._getProgramTrackedEntityAttributeDataElementjson(
+            dataElements
+          ),
+          { item1: '' }
+        ];
+      }
+
+      jsonObject[sheetName] = flattenDeep([...json]);
+    }
+
+    return jsonObject;
+  }
+
   _getProgramProfileInformation(program: Dhis2Program) {
     let json: any = [];
     if ((program.programSections || []).length > 0) {
@@ -128,14 +182,11 @@ export class Dhis2ProgramUtil {
         ];
         const trackedEntityAttributes =
           programSection.trackedEntityAttributes || [];
-        const attributeListJson: any =
-          this._getProgramTrackedEntityAttributejson(trackedEntityAttributes);
         json = [
           ...json,
-          ...attributeListJson,
-          {
-            item1: ''
-          }
+          ...this._getProgramTrackedEntityAttributeDataElementjson(
+            trackedEntityAttributes
+          )
         ];
       }
     } else if ((program.programTrackedEntityAttributes || []).length > 0) {
@@ -145,21 +196,19 @@ export class Dhis2ProgramUtil {
           (data) => data.trackedEntityAttribute
         )
       );
-      const attributeListJson: any = this._getProgramTrackedEntityAttributejson(
-        trackedEntityAttributes
-      );
       json = [
         ...json,
-        ...attributeListJson,
-        {
-          item1: ''
-        }
+        ...this._getProgramTrackedEntityAttributeDataElementjson(
+          trackedEntityAttributes
+        )
       ];
     }
-    return flatMapDeep(json);
+    return flatMapDeep([...json, { item1: '' }]);
   }
 
-  _getProgramTrackedEntityAttributejson(trackedEntityAttributes: any[]) {
+  _getProgramTrackedEntityAttributeDataElementjson(
+    trackedEntityAttributes: any[]
+  ) {
     let jsonObjects: any = [];
     const headers = this._getColumnHeaders(trackedEntityAttributes);
     const headerJson: any = {};
