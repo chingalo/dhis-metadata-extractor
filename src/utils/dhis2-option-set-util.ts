@@ -17,7 +17,7 @@ export class Dhis2OptionSetUtil {
     );
   }
 
-  async discoverDhis2OptionSetsMetadata() {
+  async discoverDhis2OptionSetsMetadata(): Promise<Dhis2OptionSet[]> {
     let optionSetsMetadata: Dhis2OptionSet[] = [];
     try {
       await new LogsUtil().addLogs(

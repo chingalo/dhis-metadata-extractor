@@ -5,3 +5,4 @@ export * from './http-util';
 export * from './logs-util';
 export * from './dhis2-option-set-util';
 export * from './dhis2-program-util';
+export * from './dhis2-program-rule-variable-util';
