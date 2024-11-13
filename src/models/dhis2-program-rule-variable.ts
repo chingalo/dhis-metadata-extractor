@@ -5,10 +5,10 @@ export interface Dhis2ProgramRuleVariable {
   };
   dataElement?: {
     displayName: string;
-    displayFormName: string;
+    displayFormName?: string;
   };
   trackedEntityAttribute?: {
     displayName: string;
-    displayFormName: string;
+    displayFormName?: string;
   };
 }

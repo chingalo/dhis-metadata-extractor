@@ -1,7 +1,8 @@
-import { flattenDeep, map } from 'lodash';
-import { AppUtil, HttpUtil, LogsUtil } from '.';
+import { filter, flattenDeep, map, sortBy, split } from 'lodash';
+import { AppUtil, ExcelUtil, HttpUtil, LogsUtil } from '.';
 import { sourceConfig } from '../configs';
-import { Dhis2ProgramRule } from '../models';
+import { Dhis2ProgramRule, Dhis2ProgramRuleVariable } from '../models';
+import { PROGRAM_RULE_VARIABLES_REFERENCE } from '../constants';
 
 export class Dhis2ProgramRuleUtil {
   private _headers: {
@@ -77,5 +78,71 @@ export class Dhis2ProgramRuleUtil {
       );
     }
     return flattenDeep(programRulePageFilters);
+  }
+
+  async generateExcelFile(
+    programRules: Dhis2ProgramRule[],
+    programRuleVariables: Dhis2ProgramRuleVariable[]
+  ) {
+    try {
+      await new ExcelUtil(
+        'program-rule-dictionary'
+      ).writeToSingleSheetExcelFile(
+        sortBy(
+          flattenDeep(programRules).map((programRule: Dhis2ProgramRule) => {
+            const programRuleVariablesData = filter(
+              programRuleVariables,
+              (programRuleVariable: Dhis2ProgramRuleVariable) => {
+                return (
+                  programRuleVariable.program.id === programRule.program.id
+                );
+              }
+            );
+            return {
+              program: programRule.program?.name,
+              'Program Rule ID': programRule.id,
+              'Program Rule': programRule.name,
+              description: programRule.description ?? '',
+              condition: this._getFormattedCondition(
+                programRule,
+                programRuleVariablesData
+              )
+            };
+          }),
+          ['program', 'Program Rule']
+        )
+      );
+    } catch (error: any) {
+      await new LogsUtil().addLogs(
+        'error',
+        error.message || error,
+        'Dhis2ProgramRuleUtil'
+      );
+    }
+  }
+
+  _getFormattedCondition(
+    programRule: Dhis2ProgramRule,
+    programRuleVariablesData: Dhis2ProgramRuleVariable[]
+  ) {
+    let condition = programRule.condition;
+    for (const programRuleVariable of [
+      ...programRuleVariablesData,
+      ...PROGRAM_RULE_VARIABLES_REFERENCE
+    ]) {
+      const label =
+        programRuleVariable.dataElement?.displayFormName ??
+        programRuleVariable.dataElement?.displayName ??
+        programRuleVariable.trackedEntityAttribute?.displayFormName ??
+        programRuleVariable.trackedEntityAttribute?.displayName;
+      const { name } = programRuleVariable;
+      condition = split(
+        split(split(condition, `#{${name}}`).join(label), `A{${name}}`).join(
+          label
+        ),
+        `V{${name}}`
+      ).join(label);
+    }
+    return condition;
   }
 }
