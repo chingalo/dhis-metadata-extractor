@@ -35,7 +35,7 @@ export class Dhis2OptionSetUtil {
           `Discovering option set from the server:: ${pageFilter}`,
           'Dhis2OptionSetUtil'
         );
-        const url = `${this._baseUrl}/api/optionSets.json?fields=${fields}&${pageFilter}`;
+        const url = `${this._baseUrl}/api/optionSets?fields=${fields}&${pageFilter}`;
         const respose: any = await HttpUtil.getHttp(this._headers, url);
         optionSetsMetadata = [
           ...optionSetsMetadata,
@@ -60,7 +60,7 @@ export class Dhis2OptionSetUtil {
         `Discovering option set variables filters`,
         'Dhis2OptionSetUtil'
       );
-      const url = `${this._baseUrl}/api/optionSets.json?fields=none&pageSize=1&paging=true`;
+      const url = `${this._baseUrl}/api/optionSets?fields=none&pageSize=1&paging=true`;
       const responsePaginations: any = await HttpUtil.getHttp(
         this._headers,
         url

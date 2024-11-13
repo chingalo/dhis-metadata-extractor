@@ -23,7 +23,7 @@ export class Dhis2ProgramRuleVariableUtil {
     try {
       await new LogsUtil().addLogs(
         'info',
-        `Discovering program rules from the server`,
+        `Discovering program rules variables from the server`,
         'Dhis2ProgramRuleVariableUtil'
       );
       const fields = `name,program[id],dataElement[displayName,displayFormName],trackedEntityAttribute[displayName,displayFormName]`;
@@ -31,10 +31,10 @@ export class Dhis2ProgramRuleVariableUtil {
       for (const pageFilter of pageFilters) {
         await new LogsUtil().addLogs(
           'info',
-          `Discovering program rules from the server : ${pageFilter}`,
+          `Discovering program rules variables from the server : ${pageFilter}`,
           'Dhis2ProgramRuleVariableUtil'
         );
-        const url = `${this._baseUrl}/api/programRuleVariables.json?fields=${fields}&${pageFilter}`;
+        const url = `${this._baseUrl}/api/programRuleVariables?fields=${fields}&${pageFilter}`;
         const respose: any = await HttpUtil.getHttp(this._headers, url);
         programRuleVariables = [
           ...programRuleVariables,
@@ -59,7 +59,7 @@ export class Dhis2ProgramRuleVariableUtil {
         `Discovering program rule variables filters`,
         'Dhis2ProgramRuleVariableUtil'
       );
-      const url = `${this._baseUrl}/api/programRuleVariables.json?fields=none&pageSize=1&paging=true`;
+      const url = `${this._baseUrl}/api/programRuleVariables?fields=none&pageSize=1&paging=true`;
       const responsePaginations: any = await HttpUtil.getHttp(
         this._headers,
         url
