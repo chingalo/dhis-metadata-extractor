@@ -1,7 +1,11 @@
 import { filter, flattenDeep, map, sortBy, split } from 'lodash';
 import { AppUtil, ExcelUtil, HttpUtil, LogsUtil } from '.';
 import { sourceConfig } from '../configs';
-import { Dhis2ProgramRule, Dhis2ProgramRuleVariable } from '../models';
+import {
+  Dhis2ProgramRule,
+  Dhis2ProgramRuleAction,
+  Dhis2ProgramRuleVariable
+} from '../models';
 import { PROGRAM_RULE_VARIABLES_REFERENCE } from '../constants';
 
 export class Dhis2ProgramRuleUtil {
@@ -82,13 +86,14 @@ export class Dhis2ProgramRuleUtil {
 
   async generateExcelFile(
     programRules: Dhis2ProgramRule[],
-    programRuleVariables: Dhis2ProgramRuleVariable[]
+    programRuleVariables: Dhis2ProgramRuleVariable[],
+    programRuleActions: Dhis2ProgramRuleAction[]
   ) {
     try {
       await new ExcelUtil(
         'program-rule-dictionary'
-      ).writeToSingleSheetExcelFile(
-        sortBy(
+      ).writeToMultipleSheetExcelFile({
+        'Program Rules': sortBy(
           flattenDeep(programRules).map((programRule: Dhis2ProgramRule) => {
             const programRuleVariablesData = filter(
               programRuleVariables,
@@ -110,8 +115,33 @@ export class Dhis2ProgramRuleUtil {
             };
           }),
           ['program', 'Program Rule']
+        ),
+        'ProgramRules Actions': sortBy(
+          flattenDeep(
+            map(programRuleActions, (programRuleAction) => {
+              return {
+                'Program Rule Action ID': programRuleAction.id,
+                'Program Rule': programRuleAction.programRule?.name,
+                'Program Rule Action Type':
+                  programRuleAction.programRuleActionType,
+                'Form Fields':
+                  programRuleAction.dataElement?.displayFormName ??
+                  programRuleAction.dataElement?.displayName ??
+                  programRuleAction.trackedEntityAttribute?.displayFormName ??
+                  programRuleAction.trackedEntityAttribute?.displayName,
+                'Option Group': programRuleAction.optionGroup?.name,
+                'Program Stage': programRuleAction.programStage?.name,
+                'Program Stage Section':
+                  programRuleAction.programStageSection?.name,
+                Data: programRuleAction.data,
+                Content: programRuleAction.content,
+                Location: programRuleAction.location
+              };
+            })
+          ),
+          ['Program Rule', 'Program Rule Action Type', 'Form Fields']
         )
-      );
+      });
     } catch (error: any) {
       await new LogsUtil().addLogs(
         'error',
