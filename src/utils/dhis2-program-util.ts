@@ -36,7 +36,11 @@ export class Dhis2ProgramUtil {
         'info',
         `Discovering programs metadata from the server`
       );
-      for (const programId of PROGRAM_REFERENCE) {
+      const programIds =
+        PROGRAM_REFERENCE.length > 0
+          ? PROGRAM_REFERENCE
+          : await this.discoverProgramIds();
+      for (const programId of programIds) {
         const programMetadata: any = await this.discoverProgramById(programId);
         programsMetadata.push(programMetadata);
       }
@@ -66,6 +70,23 @@ export class Dhis2ProgramUtil {
     });
   }
 
+  async discoverProgramIds(): Promise<string[]> {
+    let programIds: string[] = [];
+    try {
+      const fields = `id`;
+      const url = `${this._baseUrl}/api/programs?fields=${fields}`;
+      const response: any = await HttpUtil.getHttp(this._headers, url);
+      programIds = flattenDeep(map(response.programs, (program) => program.id));
+    } catch (error: any) {
+      await new LogsUtil().addLogs(
+        'error',
+        error.message || error,
+        'Dhis2ProgramUtil'
+      );
+    }
+    return programIds;
+  }
+
   async discoverProgramById(programId: string): Promise<Dhis2Program> {
     await new LogsUtil().addLogs(
       'info',
@@ -73,7 +94,7 @@ export class Dhis2ProgramUtil {
       'Dhis2ProgramUtil'
     );
     const fields = `id,programType,name,trackedEntityType[name,id],programSections[name,id,sortOrder,trackedEntityAttributes[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id,code]]],programTrackedEntityAttributes[trackedEntityAttribute[name,id,code,shortName,aggregationType,displayInListNoProgram,pattern,valueType,formName,optionSet[name,id]]],programStages[id,name,publicAccess,programStageDataElements[dataElement[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]],programStageSections[id,name,dataElements[id,name,code,shortName,formName,description,valueType,aggregationType,domainType,zeroIsSignificant,optionSet[name,id]]]]`;
-    const url = `${this._baseUrl}/api/programs/${programId}.json?fields=${fields}`;
+    const url = `${this._baseUrl}/api/programs/${programId}?fields=${fields}`;
     return HttpUtil.getHttp(this._headers, url);
   }
 
@@ -110,7 +131,7 @@ export class Dhis2ProgramUtil {
       await new LogsUtil().addLogs(
         'error',
         error.message || error,
-        'Dhis2OrganisationUnitUtil'
+        'Dhis2ProgramUtil'
       );
     }
   }

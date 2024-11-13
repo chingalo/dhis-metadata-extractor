@@ -5,4 +5,4 @@ export const sourceConfig: AppConfigModel = {
   baseUrl: ''
 };
 
-export const PROGRAM_REFERENCE = []; //List of applicable program ids
+export const PROGRAM_REFERENCE = []; //List of applicable program ids if empty all programs will be fetched
