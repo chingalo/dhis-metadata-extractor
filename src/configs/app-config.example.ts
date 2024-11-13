@@ -4,3 +4,5 @@ export const sourceConfig: AppConfigModel = {
   password: '',
   baseUrl: ''
 };
+
+export const PROGRAM_REFERENCE = []; //List of applicable program ids
