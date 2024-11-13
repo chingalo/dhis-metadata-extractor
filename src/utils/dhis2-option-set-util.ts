@@ -9,6 +9,8 @@ export class Dhis2OptionSetUtil {
     'Content-Type': string;
   };
   private _baseUrl: string;
+  private pageSize = 200;
+
   constructor() {
     this._baseUrl = sourceConfig.baseUrl;
     this._headers = AppUtil.getHttpAuthorizationHeader(
@@ -22,12 +24,24 @@ export class Dhis2OptionSetUtil {
     try {
       await new LogsUtil().addLogs(
         'info',
-        `Discovering option set from the server`
+        `Discovering option set from the server`,
+        'Dhis2OptionSetUtil'
       );
       const fields = `id,name,code,valueType,options[id,name,code]`;
-      const url = `${this._baseUrl}/api/optionSets.json?fields=${fields}&paging=false`;
-      const respose: any = await HttpUtil.getHttp(this._headers, url);
-      optionSetsMetadata = respose.optionSets || optionSetsMetadata;
+      const pageFilters = await this.getOptionSetFilters();
+      for (const pageFilter of pageFilters) {
+        await new LogsUtil().addLogs(
+          'info',
+          `Discovering option set from the server:: ${pageFilter}`,
+          'Dhis2OptionSetUtil'
+        );
+        const url = `${this._baseUrl}/api/optionSets.json?fields=${fields}&${pageFilter}`;
+        const respose: any = await HttpUtil.getHttp(this._headers, url);
+        optionSetsMetadata = [
+          ...optionSetsMetadata,
+          ...(respose.optionSets ?? [])
+        ];
+      }
     } catch (error: any) {
       await new LogsUtil().addLogs(
         'error',
@@ -36,6 +50,34 @@ export class Dhis2OptionSetUtil {
       );
     }
     return flattenDeep(optionSetsMetadata);
+  }
+
+  async getOptionSetFilters(): Promise<string[]> {
+    let optionSetPageFilters: any[] = [];
+    try {
+      await new LogsUtil().addLogs(
+        'info',
+        `Discovering option set variables filters`,
+        'Dhis2OptionSetUtil'
+      );
+      const url = `${this._baseUrl}/api/optionSets.json?fields=none&pageSize=1&paging=true`;
+      const responsePaginations: any = await HttpUtil.getHttp(
+        this._headers,
+        url
+      );
+      const pageFilters = AppUtil.getPaginationsFilters(
+        responsePaginations,
+        this.pageSize
+      );
+      optionSetPageFilters = map(pageFilters, (pageFilter) => `${pageFilter}`);
+    } catch (error: any) {
+      await new LogsUtil().addLogs(
+        'error',
+        error.message || error,
+        'Dhis2OptionSetUtil'
+      );
+    }
+    return flattenDeep(optionSetPageFilters);
   }
 
   async generateExcelFile(optionSets: Dhis2OptionSet[]) {
