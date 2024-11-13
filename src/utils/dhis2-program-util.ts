@@ -36,7 +36,11 @@ export class Dhis2ProgramUtil {
         'info',
         `Discovering programs metadata from the server`
       );
-      for (const programId of PROGRAM_REFERENCE) {
+      const programIds =
+        PROGRAM_REFERENCE.length > 0
+          ? PROGRAM_REFERENCE
+          : await this.discoverProgramIds();
+      for (const programId of programIds) {
         const programMetadata: any = await this.discoverProgramById(programId);
         programsMetadata.push(programMetadata);
       }
@@ -64,6 +68,23 @@ export class Dhis2ProgramUtil {
         programStages: programStages
       };
     });
+  }
+
+  async discoverProgramIds(): Promise<string[]> {
+    let programIds: string[] = [];
+    try {
+      const fields = `id`;
+      const url = `${this._baseUrl}/api/programs?fields=${fields}`;
+      const response: any = await HttpUtil.getHttp(this._headers, url);
+      programIds = flattenDeep(map(response.programs, (program) => program.id));
+    } catch (error: any) {
+      await new LogsUtil().addLogs(
+        'error',
+        error.message || error,
+        'Dhis2ProgramUtil'
+      );
+    }
+    return programIds;
   }
 
   async discoverProgramById(programId: string): Promise<Dhis2Program> {
@@ -110,7 +131,7 @@ export class Dhis2ProgramUtil {
       await new LogsUtil().addLogs(
         'error',
         error.message || error,
-        'Dhis2OrganisationUnitUtil'
+        'Dhis2ProgramUtil'
       );
     }
   }
