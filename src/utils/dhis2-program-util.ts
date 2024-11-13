@@ -8,13 +8,12 @@ import {
   uniq
 } from 'lodash';
 import { AppUtil, ExcelUtil, HttpUtil, LogsUtil } from '.';
-import { sourceConfig } from '../configs';
+import { PROGRAM_REFERENCE, sourceConfig } from '../configs';
 import {
   Dhis2DataElement,
   Dhis2Program,
   Dhis2TrackedEntityAttribute
 } from '../models';
-import { PROGRAM_REFERENCE } from '../constants';
 
 export class Dhis2ProgramUtil {
   private _headers: {
