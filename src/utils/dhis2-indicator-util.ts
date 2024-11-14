@@ -1,4 +1,4 @@
-import { flattenDeep, map, sortBy, trim } from 'lodash';
+import { filter, flattenDeep, map, sortBy, split, trim } from 'lodash';
 import { AppUtil, ExcelUtil, HttpUtil, LogsUtil } from '.';
 import { sourceConfig } from '../configs';
 import { Dhis2Indicator, Dhis2ProgramIndicator } from '../models';
@@ -88,15 +88,20 @@ export class Dhis2IndicatorUtil {
               const { denominator, numerator, indicatorType } = indicator;
               const indicatorTypeFactor = indicatorType?.factor;
               const indicatorTypeName = indicatorType?.name;
-              //TODO: deduce numerator and denominator
               return {
                 ...indicator,
                 indicatorType:
                   trim(indicatorTypeName) == ''
                     ? `${indicatorTypeFactor}`
                     : `${indicatorTypeName} : ${indicatorTypeFactor}`,
-                numerator: numerator,
-                denominator: denominator
+                numerator: this._getFormattedIndicatorExpression(
+                  numerator,
+                  programIndicators
+                ),
+                denominator: this._getFormattedIndicatorExpression(
+                  denominator,
+                  programIndicators
+                )
               };
             })
           ),
@@ -110,5 +115,28 @@ export class Dhis2IndicatorUtil {
         'Dhis2IndicatorUtil'
       );
     }
+  }
+
+  _getFormattedIndicatorExpression(
+    expression: string,
+    programIndicators: Dhis2ProgramIndicator[]
+  ) {
+    const regex = /I\{([A-Za-z0-9]+)\}/g;
+    const programIndicatorIds: any = [];
+    let match;
+    while ((match = regex.exec(expression)) !== null) {
+      programIndicatorIds.push(match[1]);
+    }
+    const filteredProgramIndicators: any[] = filter(
+      programIndicators,
+      (programIndicator) => programIndicatorIds.includes(programIndicator.id)
+    );
+    for (let programIndicator of filteredProgramIndicators) {
+      expression = split(expression, `I{${programIndicator.id}}`).join(
+        programIndicator.name
+      );
+    }
+
+    return expression;
   }
 }
