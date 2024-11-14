@@ -6,4 +6,5 @@ export interface Dhis2ProgramIndicator {
   analyticsType: string;
   id: string;
   programIndicatorGroups: Array<{ name: string }>;
+  program: { id: string };
 }

@@ -1,7 +1,7 @@
 import { flattenDeep, join, map, sortBy, trim } from 'lodash';
 import { AppUtil, HttpUtil, LogsUtil } from '.';
 import { sourceConfig } from '../configs';
-import { Dhis2ProgramIndicator } from '../models';
+import { Dhis2Program, Dhis2ProgramIndicator } from '../models';
 
 export class Dhis2ProgramIndicatorUtil {
   private _headers: {
@@ -26,7 +26,7 @@ export class Dhis2ProgramIndicatorUtil {
         `Discovering program indicators from the server`,
         'Dhis2ProgramIndicatorUtil'
       );
-      const fields = `id,name,shortname,description,expression,filter,analyticsType,programIndicatorGroups[name]`;
+      const fields = `id,name,shortname,description,expression,filter,analyticsType,programIndicatorGroups[name],program[id]`;
       const pageFilters = await this.getProgramIndicatorsFilters();
       for (const pageFilter of pageFilters) {
         await new LogsUtil().addLogs(
@@ -82,13 +82,19 @@ export class Dhis2ProgramIndicatorUtil {
     return flattenDeep(programIndicatorPageFilters);
   }
 
-  async generateExcelFile(programIndicators: Dhis2ProgramIndicator[]) {
+  async generateExcelFile(
+    programIndicators: Dhis2ProgramIndicator[],
+    programs: Dhis2Program[]
+  ) {
     try {
       const data = sortBy(
         flattenDeep(
           map(programIndicators, (programIndicator) => {
-            const { expression, filter, programIndicatorGroups } =
+            const { expression, filter, programIndicatorGroups, program } =
               programIndicator;
+            //
+            const { id: programId } = program;
+            //console.log(programId);
             return {
               ...programIndicator,
               programIndicatorGroups: join(
@@ -105,7 +111,7 @@ export class Dhis2ProgramIndicatorUtil {
         ),
         ['name', 'programIndicatorGroups']
       );
-      console.log(data);
+      // console.log(data);
     } catch (error: any) {
       await new LogsUtil().addLogs(
         'error',
