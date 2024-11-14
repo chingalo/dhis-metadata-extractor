@@ -1,6 +1,6 @@
 import { Dhis2ProgramRuleVariable } from '../models';
 
-export const PROGRAM_RULE_VARIABLES_REFERENCE: Dhis2ProgramRuleVariable[] = [
+export const IN_BUILT_VARIABLES_REFERENCE: Dhis2ProgramRuleVariable[] = [
   {
     name: 'current_date',
     dataElement: {
@@ -14,6 +14,14 @@ export const PROGRAM_RULE_VARIABLES_REFERENCE: Dhis2ProgramRuleVariable[] = [
     dataElement: {
       displayName: 'Event Date',
       displayFormName: 'Event Date'
+    },
+    program: { id: '' }
+  },
+  {
+    name: 'enrollment_count',
+    dataElement: {
+      displayName: 'Enrollment count',
+      displayFormName: 'Enrollment count'
     },
     program: { id: '' }
   }
