@@ -18,6 +18,30 @@ export const IN_BUILT_VARIABLES_REFERENCE: Dhis2ProgramRuleVariable[] = [
     program: { id: '' }
   },
   {
+    name: 'program_stage_id',
+    dataElement: {
+      displayName: 'Program Stage ID',
+      displayFormName: 'Program Stage ID'
+    },
+    program: { id: '' }
+  },
+  {
+    name: 'enrollment_date',
+    dataElement: {
+      displayName: 'Enrollment Date',
+      displayFormName: 'Enrollment Date'
+    },
+    program: { id: '' }
+  },
+  {
+    name: 'event_count',
+    dataElement: {
+      displayName: 'Event Count',
+      displayFormName: 'Event Count'
+    },
+    program: { id: '' }
+  },
+  {
     name: 'enrollment_count',
     dataElement: {
       displayName: 'Enrollment count',
