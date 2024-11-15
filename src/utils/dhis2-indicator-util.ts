@@ -81,7 +81,7 @@ export class Dhis2IndicatorUtil {
     programIndicators: Dhis2ProgramIndicator[]
   ) {
     try {
-      await new ExcelUtil('Indicator-dictionary').writeToSingleSheetExcelFile(
+      await new ExcelUtil('indicator-dictionary').writeToSingleSheetExcelFile(
         sortBy(
           flattenDeep(
             map(indicators, (indicator) => {
