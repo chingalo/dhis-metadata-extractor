@@ -4,3 +4,5 @@ export * from './dhis2-program';
 export * from './dhis2-program-rule';
 export * from './dhis2-program-rule-variable';
 export * from './dhis2-program-rule-action';
+export * from './dhis2-program-indicator';
+export * from './dhis2-indicator';
