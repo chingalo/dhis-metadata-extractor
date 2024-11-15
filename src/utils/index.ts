@@ -8,3 +8,5 @@ export * from './dhis2-program-util';
 export * from './dhis2-program-rule-variable-util';
 export * from './dhis2-program-rule-action-util';
 export * from './dhis2-program-rule-util';
+export * from './dhis2-program-indicator-util';
+export * from './dhis2-indicator-util';

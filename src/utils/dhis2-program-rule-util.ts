@@ -6,7 +6,7 @@ import {
   Dhis2ProgramRuleAction,
   Dhis2ProgramRuleVariable
 } from '../models';
-import { PROGRAM_RULE_VARIABLES_REFERENCE } from '../constants';
+import { IN_BUILT_VARIABLES_REFERENCE } from '../constants';
 
 export class Dhis2ProgramRuleUtil {
   private _headers: {
@@ -158,7 +158,7 @@ export class Dhis2ProgramRuleUtil {
     let condition = programRule.condition;
     for (const programRuleVariable of [
       ...programRuleVariablesData,
-      ...PROGRAM_RULE_VARIABLES_REFERENCE
+      ...IN_BUILT_VARIABLES_REFERENCE
     ]) {
       const label =
         programRuleVariable.dataElement?.displayFormName ??
